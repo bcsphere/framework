@@ -37,7 +37,10 @@ document.addEventListener("deviceready",function(){
 		openApp : function(success,error,appid){
 			cordova.exec(success,error,"BCUtility","openApp",[{"appid" : appid}]);
 		},
-		
+
+		retry : function(success,error){
+			cordova.exec(success,error,"BCUtility","retry",[]);
+		},
 	};
 	module.exports = utilities;
 	});
