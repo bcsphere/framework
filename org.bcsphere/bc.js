@@ -73,6 +73,8 @@ document.addEventListener("deviceready",function(){
 			}	
 		}
 		
+		navigator.bluetooth = cordova.require("org.bcsphere.bluetooth.bluetoothapi");
+		
 		//wait for plugin ready
 		var time = 0;
 		var bcreadyIsFired = false;
