@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bluetooth.profile.serial_port", function(require, exports, module) { /*
+/*
     Copyright 2013-2014, JUMA Technology
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,8 @@ cordova.define("org.bluetooth.profile.serial_port", function(require, exports, m
     limitations under the License.
 */
 
+document.addEventListener('deviceready',function(){
+	cordova.define("org.bluetooth.profile.serial_port", function(require, exports, module) {
 		
 		var BC = require("org.bluetooth.service.serial_port");
 		
@@ -173,6 +174,5 @@ cordova.define("org.bluetooth.profile.serial_port", function(require, exports, m
 		
 		module.exports = BC;
 
-
-});
+	});
 },false);

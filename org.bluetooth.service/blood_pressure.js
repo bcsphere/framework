@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bluetooth.service.blood_pressure", function(require, exports, module) {  /*
+ /*
     Copyright 2013-2014, JUMA Technology
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +13,8 @@ cordova.define("org.bluetooth.service.blood_pressure", function(require, exports
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+document.addEventListener('deviceready',function(){
+	cordova.define("org.bluetooth.service.blood_pressure", function(require, exports, module) {
 			
 		var BC = require("org.bcsphere.bcjs");
 		
@@ -33,5 +34,5 @@ cordova.define("org.bluetooth.service.blood_pressure", function(require, exports
 			BC.bluetooth.UUIDMap["00001810-0000-1000-8000-00805f9b34fb"] = BC.BloodPressureService;
 		});
 		module.exports = BC;
-});
+	});
 },false);

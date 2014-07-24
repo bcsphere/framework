@@ -1,8 +1,9 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.underscorejs.underscore", function(require, exports, module) { ﻿//     Underscore.js 1.5.2
+﻿//     Underscore.js 1.5.2
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
+document.addEventListener("deviceready",function(){
+	cordova.define("org.underscorejs.underscore", function(require, exports, module) {
 
 	  // Baseline setup
 	  // --------------
@@ -1272,6 +1273,6 @@ cordova.define("org.underscorejs.underscore", function(require, exports, module)
 
 	  });
 
-
-});
+	});
+	
 },false);

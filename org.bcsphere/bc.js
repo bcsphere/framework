@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bcsphere.bcjs", function(require, exports, module) { /*
+/*
 	Copyright 2013-2014, JUMA Technology
 
 	Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +13,9 @@ cordova.define("org.bcsphere.bcjs", function(require, exports, module) { /*
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
+document.addEventListener("deviceready",function(){
+	navigator.bluetooth = cordova.require("org.bcsphere.bluetooth.bluetoothapi");
+	cordova.define("org.bcsphere.bcjs", function(require, exports, module) {
 
 		var root = this;
 		/**
@@ -2113,9 +2115,8 @@ cordova.define("org.bcsphere.bcjs", function(require, exports, module) { /*
 		
 		module.exports = BC;
 		
+	});
 	
-
-
-
-});
 },false);
+
+

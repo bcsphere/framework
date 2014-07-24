@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bluetooth.service.serial_port", function(require, exports, module) {  /*
+ /*
     Copyright 2013-2014, JUMA Technology
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +13,9 @@ cordova.define("org.bluetooth.service.serial_port", function(require, exports, m
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
+document.addEventListener('deviceready',function(){
+	cordova.define("org.bluetooth.service.serial_port", function(require, exports, module) {		
+		
 		var BC = require("org.bcsphere.bcjs");
 		
 		var SerialPortService = BC.SerialPortService = BC.Service.extend({
@@ -52,8 +53,6 @@ cordova.define("org.bluetooth.service.serial_port", function(require, exports, m
 		document.addEventListener('bccoreready',function(){
 			BC.bluetooth.UUIDMap["6E400001-B5A3-F393-E0A9-E50E24DCCA9E"] = BC.SerialPortService;
 		});
-		
 		module.exports = BC;
-
-});
+	});
 },false);

@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bluetooth.service.immediate_alert", function(require, exports, module) {  /*
+ /*
     Copyright 2013-2014, JUMA Technology
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,9 @@ cordova.define("org.bluetooth.service.immediate_alert", function(require, export
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-*/	
+*/
+document.addEventListener('deviceready',function(){
+	cordova.define("org.bluetooth.service.immediate_alert", function(require, exports, module) {		
 		
 		var BC = require("org.bcsphere.bcjs");
 		
@@ -56,6 +57,5 @@ cordova.define("org.bluetooth.service.immediate_alert", function(require, export
 			BC.bluetooth.UUIDMap["00001802-0000-1000-8000-00805f9b34fb"] = BC.ImmediateAlertService;
 		});
 		module.exports = BC;
-
-});
+	});
 },false);

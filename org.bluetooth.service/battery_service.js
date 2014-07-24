@@ -1,5 +1,4 @@
-document.addEventListener('deviceready',function(){
-cordova.define("org.bluetooth.service.battery_service", function(require, exports, module) {  /*
+ /*
     Copyright 2013-2014, JUMA Technology
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +13,8 @@ cordova.define("org.bluetooth.service.battery_service", function(require, export
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+document.addEventListener('deviceready',function(){
+	cordova.define("org.bluetooth.service.battery_service", function(require, exports, module) {
 			
 		var BC = require("org.bcsphere.bcjs");
 		
@@ -45,6 +46,5 @@ cordova.define("org.bluetooth.service.battery_service", function(require, export
 		});
 		
 		module.exports = BC;
-
-});
+	});
 },false);
