@@ -1,4 +1,6 @@
-/*
+document.addEventListener("deviceready",function(){
+navigator.bluetooth = cordova.require("org.bcsphere.bluetooth.bluetoothapi");
+cordova.define("org.bcsphere.bcjs", function(require, exports, module) { /*
 	Copyright 2013-2014, JUMA Technology
 
 	Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +15,6 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
-document.addEventListener("deviceready",function(){
-	navigator.bluetooth = cordova.require("org.bcsphere.bluetooth.bluetoothapi");
-	cordova.define("org.bcsphere.bcjs", function(require, exports, module) {
 
 		var root = this;
 		/**
@@ -31,7 +30,7 @@ document.addEventListener("deviceready",function(){
 			BC = root.BC = {};
 		}
 		
-		BC.VERSION = "0.4.0";
+		BC.VERSION = "0.5.0";
 		/** 
 		 * Opens all useful alert.
 		 * @global 
@@ -72,8 +71,6 @@ document.addEventListener("deviceready",function(){
 				alert(JSON.stringify(message));
 			}	
 		}
-		
-		navigator.bluetooth = cordova.require("org.bcsphere.bluetooth.bluetoothapi");
 		
 		//wait for plugin ready
 		var time = 0;
@@ -430,6 +427,9 @@ document.addEventListener("deviceready",function(){
 				this.openBluetooth = function(success,error){
 					navigator.bluetooth.openBluetooth(success,error);
 				};
+				this.closeBluetooth = function(success,error){
+					navigator.bluetooth.closeBluetooth(success,error);
+				};
 				this.addSystemListener = function(success,error,arg){
 					navigator.bluetooth.addEventListener(success,error,arg);
 				};
@@ -544,6 +544,7 @@ document.addEventListener("deviceready",function(){
 				this.getEnvironment = this.bluetoothFuncs.getEnvironment;
 				this.getBluetoothState = this.bluetoothFuncs.getBluetoothState;
 				this.openBluetooth = this.bluetoothFuncs.openBluetooth;
+				this.closeBluetooth = this.bluetoothFuncs.closeBluetooth;
 				
 				//character operation
 				this.writeCharacteristic = this.bluetoothFuncs.writeCharacteristic;
@@ -596,6 +597,19 @@ document.addEventListener("deviceready",function(){
 		 */
 		var OpenBluetooth = BC.Bluetooth.OpenBluetooth = function(success,error){
 			BC.bluetooth.openBluetooth(success,error);
+		};
+
+		/** 
+		 * @memberof Bluetooth
+		 * @method 
+		 * @example 
+		 * //Close Bluetooth.
+		 * BC.Bluetooth.CloseBluetooth(function(){alert("bluetooth closed!");},function(){alert("bluetooth close error!");});
+		 * @param {function} [successCallback] - Success callback
+		 * @param {function} [errorCallback] - Error callback
+		 */
+		var CloseBluetooth = BC.Bluetooth.CloseBluetooth = function(success,error){
+			BC.bluetooth.closeBluetooth(success,error);
 		};
 
 		/** 
@@ -976,6 +990,37 @@ document.addEventListener("deviceready",function(){
 			},
 		});
 		
+		/**
+		 * Profile is a bundle of functions to operate the devices, our implements are based on bluetooth specification(www.bluetooth.org).
+		 * @example //define a custom profile
+		 * var FindMeProfile = BC.FindMeProfile = BC.Profile.extend({
+		 *	
+		 *	no_alert : function(device){
+		 *	  this.alert(device,'0');
+		 *	},
+		 *  
+		 *	mild_alert : function(device){
+		 *	  this.alert(device,'1');
+		 *	},
+		 *   
+		 *	high_alert : function(device){
+		 *	  this.alert(device,'2');
+		 *	},
+		 *
+		 *	alert : function(device,level){
+		 *		device.discoverServices(function(){
+		 *			var service = device.getServiceByUUID(serviceUUID)[0];
+		 *			service.alert(level);
+		 *		});
+		 *	},
+		 *	
+		 *});
+		 *
+		 * //use profile
+		 * var findmeProfile = new BC.FindMeProfile();
+		 * findmeProfile.high_alert(device);
+		 * @class
+		 */
 		var Profile = BC.Profile = BC.EventDispatcher.extend({
 		
 		});
@@ -1191,7 +1236,11 @@ document.addEventListener("deviceready",function(){
 						var sname = service.serviceName;
 						var suuid = service.serviceUUID;
 						var chars = service.characteristics;
-						device.services.push(new BC.Service({index:sindex,uuid:suuid,name:sname,device:device,chars:chars}));
+						if(BC.bluetooth.UUIDMap[suuid]){
+							device.services.push(new BC.bluetooth.UUIDMap[suuid]({index:sindex,uuid:suuid,name:sname,device:device,chars:chars}));
+						}else{
+							device.services.push(new BC.Service({index:sindex,uuid:suuid,name:sname,device:device,chars:chars}));
+						}
 					}
 				);
 				this.isPrepared = true;
@@ -1373,12 +1422,7 @@ document.addEventListener("deviceready",function(){
 			getServiceByUUID : function(uuid){
 				var uuid = uuid.toLowerCase();
 				var result = [];
-				var uuid_128 = "";
-				if(uuid.length == 4){
-					uuid_128 = "0000"+ uuid +"-0000-1000-8000-00805f9b34fb";
-				}else if(uuid.length == 36){
-					uuid_128 = uuid;
-				}
+				var uuid_128 = BC.Tools.ChangeTo128UUID(uuid);
 				_.each(this.services, function(service){
 						service.uuid = service.uuid.toLowerCase();
 						if(service.uuid == uuid_128){
@@ -1723,6 +1767,7 @@ document.addEventListener("deviceready",function(){
 				data.characteristicIndex = this.index;
 				data.date = arguments[1].date;
 				data.value = new BC.DataValue(BC.Tools.Base64ToBuffer(arguments[1].value));
+				//data.value = new BC.DataValue(arguments[1].value);
 				this.success(data);
 			},
 			readError : function(){
@@ -1740,7 +1785,7 @@ document.addEventListener("deviceready",function(){
 			 * function writeSuccess(data){
 			 *	alert("write success!");
 			 * }
-			 * @param {string} type - The type of the value to write ('hex'/'ascii'/'unicode'/'raw')
+			 * @param {string} type - The type of the value to write ('hex'/'ascii'/'unicode'/'raw'/'base64')
 			 * @param {string/Uint8Array} value - The value write to this characteristic, if the 'type' is 'raw', the value type should be Uint8Array
 			 * @param {function} successCallback - Success callback
 			 * @param {function} [errorCallback] - Error callback
@@ -1757,8 +1802,10 @@ document.addEventListener("deviceready",function(){
 					value = BC.Tools.UnicodeToBase64(value);
 				}else if(type.toLowerCase() == "raw"){
 					value = BC.Tools.ConvertToBase64(value);
+				}else if(type.toLowerCase() == "base64"){
+					value = value;
 				}else{
-					error("Please input 'hex'/'ascii'/'unicode' type.");
+					error("Please input 'hex'/'ascii'/'unicode'/'raw'/'base64' type.");
 					return;
 				}
 				if(this.property.contains("write") || this.property.contains("writeWithoutResponse")){
@@ -1798,6 +1845,7 @@ document.addEventListener("deviceready",function(){
 				var obj = arguments[1];
 				var data = {};
 				data.value = new BC.DataValue(BC.Tools.Base64ToBuffer(obj.value));
+				//data.value = new BC.DataValue(obj.value);
 				data.serviceIndex = obj.serviceIndex;
 				data.characteristicIndex = obj.characteristicIndex;
 				data.date = obj.date;
@@ -1907,12 +1955,7 @@ document.addEventListener("deviceready",function(){
 			getDescriptorByUUID : function(uuid){
 				var uuid = uuid.toLowerCase();
 				var result = [];
-				var uuid_128 = "";
-				if(uuid.length == 4){
-					uuid_128 = "0000"+ uuid +"-0000-1000-8000-00805f9b34fb";
-				}else if(uuid.length == 36){
-					uuid_128 = uuid;
-				}
+				var uuid_128 = BC.Tools.ChangeTo128UUID(uuid);
 				_.each(this.descriptors, function(descriptor){
 						if(descriptor.uuid == uuid_128){
 							result.push(descriptor);
@@ -2082,7 +2125,7 @@ document.addEventListener("deviceready",function(){
 					}
 					thedevice.advTimestamp = new Date().getTime();
 				}
-				
+				BC.bluetooth.dispatchEvent("newadvpacket",scanData);
 			});
 
 			document.addEventListener("bluetoothclose",function(){
@@ -2116,9 +2159,8 @@ document.addEventListener("deviceready",function(){
 		}
 		
 		module.exports = BC;
-		
-	});
-	
+
+
+
+});
 },false);
-
-
