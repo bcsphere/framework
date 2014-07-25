@@ -155,7 +155,7 @@ cordova.define("org.bcsphere.ibeacon", function(require, exports, module) { /*
 			region.major = major;
 			region.minor = minor;
 			BC.iBeaconManager.region = region;
-			BC.Bluetooth.StartScan();
+			BC.Bluetooth.StartScan("LE");
 			BC.bluetooth.addEventListener("newadvpacket",function(event){
 				var scanData = event.target;
 				var advertisementData,deviceAddress,deviceName,isCon,RSSI,txPower;
